@@ -14,7 +14,10 @@ signals:
   void openParentToggle();
 
 private:
-  FrogPilotSettingsWindow *parent;
+  void hideToggles();
+  void showEvent(QShowEvent *event) override;
+  void showToggles(const std::set<QString> &keys);
+  void updateState(const UIState &s);
 
   std::set<QString> deviceManagementKeys = {
     "DeviceShutdown", "IncreaseThermalLimits", "LowVoltageShutdown",
@@ -26,13 +29,13 @@ private:
     "ScreenTimeout", "ScreenTimeoutOnroad"
   };
 
-  std::map<QString, AbstractControl*> toggles;
+  FrogPilotSettingsWindow *parent;
 
   Params params;
 
   bool started;
 
-  void hideToggles();
-  void showToggles(const std::set<QString> &keys);
-  void updateState(const UIState &s);
+  int customizationLevel;
+
+  std::map<QString, AbstractControl*> toggles;
 };

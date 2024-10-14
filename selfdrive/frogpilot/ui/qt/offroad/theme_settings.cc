@@ -3,19 +3,19 @@
 FrogPilotThemesPanel::FrogPilotThemesPanel(FrogPilotSettingsWindow *parent) : FrogPilotListWidget(parent), parent(parent) {
   const std::vector<std::tuple<QString, QString, QString, QString>> themeToggles {
     {"PersonalizeOpenpilot", tr("Custom Theme"), tr("Custom openpilot themes."), "../frogpilot/assets/toggle_icons/frog.png"},
-    {"CustomColors", tr("Color Scheme"), tr("Themed color schemes.\n\nWant to submit your own color scheme? Share it in the 'feature-request' channel on the FrogPilot Discord!"), ""},
-    {"CustomDistanceIcon", "Distance Button Icons", "Themed distance button icons.\n\nWant to submit your own icon pack? Share it in the 'feature-request' channel on the FrogPilot Discord!", ""},
-    {"CustomIcons", tr("Icon Pack"), tr("Themed icon packs.\n\nWant to submit your own icons? Share them in the 'feature-request' channel on the FrogPilot Discord!"), ""},
-    {"CustomSounds", tr("Sound Pack"), tr("Themed sound effects.\n\nWant to submit your own sounds? Share them in the 'feature-request' channel on the FrogPilot Discord!"), ""},
-    {"WheelIcon", tr("Steering Wheel"), tr("Custom steering wheel icons."), ""},
-    {"CustomSignals", tr("Turn Signal Animation"), tr("Themed turn signal animations.\n\nWant to submit your own animations? Share them in the 'feature-request' channel on the FrogPilot Discord!"), ""},
+    {"CustomColors", tr("Color Scheme"), tr("Changes out openpilot's color scheme.\n\nWant to submit your own color scheme? Share it in the 'custom-themes' channel on the FrogPilot Discord!"), ""},
+    {"CustomDistanceIcons", "Distance Button", "Changes out openpilot's distance button icons.\n\nWant to submit your own icon pack? Share it in the 'custom-themes' channel on the FrogPilot Discord!", ""},
+    {"CustomIcons", tr("Icon Pack"), tr("Changes out openpilot's icon pack.\n\nWant to submit your own icons? Share them in the 'custom-themes' channel on the FrogPilot Discord!"), ""},
+    {"CustomSounds", tr("Sound Pack"), tr("Changes out openpilot's sound effects.\n\nWant to submit your own sounds? Share them in the 'custom-themes' channel on the FrogPilot Discord!"), ""},
+    {"WheelIcon", tr("Steering Wheel"), tr("Enables a custom steering wheel icon in the top right of the screen."), ""},
+    {"CustomSignals", tr("Turn Signal Animation"), tr("Enables themed turn signal animations.\n\nWant to submit your own animations? Share them in the 'custom-themes' channel on the FrogPilot Discord!"), ""},
     {"DownloadStatusLabel", tr("Download Status"), "", ""},
 
-    {"HolidayThemes", tr("Holiday Themes"), tr("Change the openpilot theme based on the current holiday. Minor holidays last one day, while major holidays (Easter, Christmas, Halloween, etc.) last a week."), "../frogpilot/assets/toggle_icons/icon_calendar.png"},
+    {"HolidayThemes", tr("Holiday Themes"), tr("Changes the openpilot theme based on the current holiday. Minor holidays last one day, while major holidays (Easter, Christmas, Halloween, etc.) last the entire week."), "../frogpilot/assets/toggle_icons/icon_calendar.png"},
 
-    {"RandomEvents", tr("Random Events"), tr("Random cosmetic events that happen during certain driving conditions. These events are purely for fun and don't affect driving controls!"), "../frogpilot/assets/toggle_icons/icon_random.png"},
+    {"RandomEvents", tr("Random Events"), tr("Enables random cosmetic events that happen during certain driving conditions. These events are purely for fun and don't affect driving controls!"), "../frogpilot/assets/toggle_icons/icon_random.png"},
 
-    {"StartupAlert", tr("Startup Alert"), tr("Custom 'Startup' alert message that appears when you start driving."), "../frogpilot/assets/toggle_icons/icon_message.png"}
+    {"StartupAlert", tr("Startup Alert"), tr("Controls the text of the 'Startup' alert message that appears when you start the drive."), "../frogpilot/assets/toggle_icons/icon_message.png"}
   };
 
   for (const auto &[param, title, desc, icon] : themeToggles) {
@@ -144,7 +144,6 @@ FrogPilotThemesPanel::FrogPilotThemesPanel(FrogPilotSettingsWindow *parent) : Fr
           QString colorSchemeToSelect = MultiOptionDialog::getSelection(tr("Select a color scheme"), availableColors, currentColor, this);
           if (!colorSchemeToSelect.isEmpty()) {
             params.put("CustomColors", formatColorNameForStorage(colorSchemeToSelect).toStdString());
-            loadThemeColors("", true);
             manageCustomColorsBtn->setValue(colorSchemeToSelect);
             paramsMemory.putBool("UpdateTheme", true);
           }
@@ -163,7 +162,7 @@ FrogPilotThemesPanel::FrogPilotThemesPanel(FrogPilotSettingsWindow *parent) : Fr
       }
       manageCustomColorsBtn->setValue(currentColor);
       themeToggle = manageCustomColorsBtn;
-    } else if (param == "CustomDistanceIcon") {
+    } else if (param == "CustomDistanceIcons") {
       manageDistanceIconsBtn = new FrogPilotButtonsControl(title, desc, {tr("DELETE"), tr("DOWNLOAD"), tr("SELECT")});
 
       std::function<QString(QString)> formatIconName = [](QString name) -> QString {
@@ -848,10 +847,10 @@ FrogPilotThemesPanel::FrogPilotThemesPanel(FrogPilotSettingsWindow *parent) : Fr
           params.put("StartupMessageTop", frogpilotTop.toStdString());
           params.put("StartupMessageBottom", frogpilotBottom.toStdString());
         } else if (id == 2) {
-          QString newTop = InputDialog::getText(tr("Enter your text for the top half"), this, tr("Characters: 0/%1").arg(maxLengthTop), false, -1, currentTop, maxLengthTop).trimmed();
+          QString newTop = InputDialog::getText(tr("Enter the text for the top half"), this, tr("Characters: 0/%1").arg(maxLengthTop), false, -1, currentTop, maxLengthTop).trimmed();
           if (newTop.length() > 0) {
             params.putNonBlocking("StartupMessageTop", newTop.toStdString());
-            QString newBottom = InputDialog::getText(tr("Enter your text for the bottom half"), this, tr("Characters: 0/%1").arg(maxLengthBottom), false, -1, currentBottom, maxLengthBottom).trimmed();
+            QString newBottom = InputDialog::getText(tr("Enter the text for the bottom half"), this, tr("Characters: 0/%1").arg(maxLengthBottom), false, -1, currentBottom, maxLengthBottom).trimmed();
             if (newBottom.length() > 0) {
               params.putNonBlocking("StartupMessageBottom", newBottom.toStdString());
             }
@@ -860,6 +859,8 @@ FrogPilotThemesPanel::FrogPilotThemesPanel(FrogPilotSettingsWindow *parent) : Fr
           params.remove("StartupMessageTop");
           params.remove("StartupMessageBottom");
         }
+
+        updateFrogPilotToggles();
       });
       themeToggle = startupAlertButton;
 
@@ -881,8 +882,15 @@ FrogPilotThemesPanel::FrogPilotThemesPanel(FrogPilotSettingsWindow *parent) : Fr
     });
   }
 
+  QObject::connect(static_cast<ToggleControl*>(toggles["HolidayThemes"]), &ToggleControl::toggleFlipped, [this] {
+    paramsMemory.putBool("UpdateTheme", true);
+  });
+
+  QObject::connect(static_cast<ToggleControl*>(toggles["PersonalizeOpenpilot"]), &ToggleControl::toggleFlipped, [this] {
+    paramsMemory.putBool("UpdateTheme", true);
+  });
+
   QObject::connect(parent, &FrogPilotSettingsWindow::closeParentToggle, this, &FrogPilotThemesPanel::hideToggles);
-  QObject::connect(parent, &FrogPilotSettingsWindow::updateCarToggles, this, &FrogPilotThemesPanel::updateCarToggles);
   QObject::connect(uiState(), &UIState::uiUpdate, this, &FrogPilotThemesPanel::updateState);
 }
 
@@ -893,17 +901,17 @@ void FrogPilotThemesPanel::showEvent(QShowEvent *event) {
   signalsDownloaded = params.get("DownloadableSignals").empty();
   soundsDownloaded = params.get("DownloadableSounds").empty();
   wheelsDownloaded = params.get("DownloadableWheels").empty();
-}
 
-void FrogPilotThemesPanel::updateCarToggles() {
-  disableOpenpilotLongitudinal = parent->disableOpenpilotLongitudinal;
-  hasOpenpilotLongitudinal = parent->hasOpenpilotLongitudinal;
+  customizationLevel = parent->customizationLevel;
 
-  hideToggles();
+  toggles["RandomEvents"]->setVisible(customizationLevel != 0);
+  toggles["StartupAlert"]->setVisible(customizationLevel == 2);
 }
 
 void FrogPilotThemesPanel::updateState(const UIState &s) {
-  if (!isVisible()) return;
+  if (!isVisible()) {
+    return;
+  }
 
   if (personalizeOpenpilotOpen) {
     if (themeDownloading) {
@@ -991,6 +999,9 @@ void FrogPilotThemesPanel::hideToggles() {
 
     toggle->setVisible(!subToggles);
   }
+
+  toggles["RandomEvents"]->setVisible(customizationLevel != 0);
+  toggles["StartupAlert"]->setVisible(customizationLevel == 2);
 
   setUpdatesEnabled(true);
   update();

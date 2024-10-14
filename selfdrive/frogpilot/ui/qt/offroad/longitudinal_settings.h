@@ -15,41 +15,60 @@ signals:
   void openSubParentToggle();
 
 private:
-  FrogPilotSettingsWindow *parent;
+  void hideSubToggles();
+  void hideToggles();
+  void showEvent(QShowEvent *event) override;
+  void showToggles(const std::set<QString> &keys);
+  void updateCarToggles();
+  void updateMetric();
 
-  FrogPilotButtonsControl *curveDetectionBtn;
-  FrogPilotButtonsControl *slcConfirmationBtn;
+  std::set<QString> aggressivePersonalityKeys = {
+    "AggressiveFollow", "AggressiveJerkAcceleration", "AggressiveJerkDeceleration",
+    "AggressiveJerkDanger", "AggressiveJerkSpeed", "AggressiveJerkSpeedDecrease",
+    "ResetAggressivePersonality"
+  };
 
   std::set<QString> conditionalExperimentalKeys = {
-    "CESpeed", "CESpeedLead", "CECurves", "CELead",
-    "CEModelStopTime", "CENavigation", "CESignalSpeed",
-    "HideCEMStatusBar"
+    "CESpeed", "CESpeedLead", "CECurves",
+    "CELead", "CEModelStopTime", "CENavigation",
+    "CESignalSpeed", "HideCEMStatusBar"
   };
 
   std::set<QString> curveSpeedKeys = {
-    "CurveDetectionMethod", "CurveSensitivity",
-    "DisableCurveSpeedSmoothing", "MTSCCurvatureCheck",
-    "TurnAggressiveness"
+    "CurveDetectionMethod", "CurveSensitivity", "DisableCurveSpeedSmoothing",
+    "MTSCCurvatureCheck", "TurnAggressiveness"
+  };
+
+  std::set<QString> customDrivingPersonalityKeys = {
+    "AggressivePersonalityProfile", "RelaxedPersonalityProfile", "StandardPersonalityProfile",
+    "TrafficPersonalityProfile"
   };
 
   std::set<QString> experimentalModeActivationKeys = {
-    "ExperimentalModeViaDistance", "ExperimentalModeViaLKAS",
-    "ExperimentalModeViaTap"
+    "ExperimentalModeViaDistance", "ExperimentalModeViaLKAS", "ExperimentalModeViaTap"
   };
 
   std::set<QString> longitudinalTuneKeys = {
-    "AccelerationProfile", "DecelerationProfile",
-    "HumanAcceleration", "HumanFollowing", "IncreasedStoppedDistance"
+    "AccelerationProfile", "DecelerationProfile", "HumanAcceleration",
+    "HumanFollowing", "IncreasedStoppedDistance", "LeadDetectionThreshold",
+    "MaxDesiredAcceleration"
   };
 
   std::set<QString> qolKeys = {
-    "CustomCruise", "CustomCruiseLong", "MapGears",
-    "OnroadDistanceButton", "ReverseCruise"
+    "CustomCruise", "CustomCruiseLong", "ForceStandstill",
+    "ForceStops", "MapGears", "ReverseCruise",
+    "SetSpeedOffset"
+  };
+
+  std::set<QString> relaxedPersonalityKeys = {
+    "RelaxedFollow", "RelaxedJerkAcceleration", "RelaxedJerkDeceleration",
+    "RelaxedJerkDanger", "RelaxedJerkSpeed", "RelaxedJerkSpeedDecrease",
+    "ResetRelaxedPersonality"
   };
 
   std::set<QString> speedLimitControllerKeys = {
-    "SLCConfirmation", "SLCOffsets", "SLCFallback", "SLCOverride",
-    "SLCPriority", "SLCQOL", "SLCVisuals"
+    "SLCConfirmation", "SLCOffsets", "SLCFallback",
+    "SLCOverride", "SLCPriority", "SLCQOL"
   };
 
   std::set<QString> speedLimitControllerOffsetsKeys = {
@@ -61,14 +80,26 @@ private:
     "SLCLookaheadLower"
   };
 
-  std::set<QString> speedLimitControllerVisualsKeys = {
-    "ShowSLCOffset", "UseVienna"
+  std::set<QString> standardPersonalityKeys = {
+    "StandardFollow", "StandardJerkAcceleration", "StandardJerkDeceleration",
+    "StandardJerkDanger", "StandardJerkSpeed", "StandardJerkSpeedDecrease",
+    "ResetStandardPersonality"
   };
 
-  std::map<QString, AbstractControl*> toggles;
+  std::set<QString> trafficPersonalityKeys = {
+    "TrafficFollow", "TrafficJerkAcceleration", "TrafficJerkDeceleration",
+    "TrafficJerkDanger", "TrafficJerkSpeed", "TrafficJerkSpeedDecrease",
+    "ResetTrafficPersonality"
+  };
+
+  FrogPilotSettingsWindow *parent;
+
+  FrogPilotButtonsControl *curveDetectionBtn;
 
   Params params;
 
+  bool customPersonalityOpen;
+  bool disableOpenpilotLongitudinal;
   bool hasPCMCruise;
   bool hasDashSpeedLimits;
   bool isGM;
@@ -78,9 +109,7 @@ private:
   bool isToyota;
   bool slcOpen;
 
-  void hideSubToggles();
-  void hideToggles();
-  void showToggles(const std::set<QString> &keys);
-  void updateCarToggles();
-  void updateMetric();
+  int customizationLevel;
+
+  std::map<QString, AbstractControl*> toggles;
 };
