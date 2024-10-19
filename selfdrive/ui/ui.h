@@ -87,6 +87,13 @@ const QColor bg_colors [] = {
   [STATUS_TRAFFIC_MODE_ACTIVE] = QColor(0xc9, 0x22, 0x31, 0xf1),
 };
 
+struct RadarTrack {
+  QPointF position;
+
+  float dRel;
+  float yRel;
+  float vRel;
+};
 
 typedef struct UIScene {
   bool calibration_valid = false;
@@ -265,6 +272,8 @@ typedef struct UIScene {
   int stopped_equivalence;
   int tethering_config;
 
+  std::vector<RadarTrack> radar_tracks;
+
 } UIScene;
 
 class UIState : public QObject {
@@ -367,3 +376,4 @@ void update_line_data(const UIState *s, const cereal::XYZTData::Reader &line,
 
 // FrogPilot functions
 void ui_update_frogpilot_params(UIState *s);
+void update_radar_tracks(UIState *s, const capnp::List<cereal::LiveTracks>::Reader &radar_tracks, const cereal::XYZTData::Reader &line);
