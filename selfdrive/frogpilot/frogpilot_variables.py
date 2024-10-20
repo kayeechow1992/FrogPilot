@@ -333,6 +333,7 @@ frogpilot_default_params: list[tuple[str, str | bytes]] = [
   ("TurnDesires", "0"),
   ("UnlimitedLength", "1"),
   ("UnlockDoors", "1"),
+  ("UseFrogServer", "1"),
   ("UseSI", "1"),
   ("UseVienna", "0"),
   ("VisionTurnControl", "1"),
