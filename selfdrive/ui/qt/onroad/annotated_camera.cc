@@ -984,7 +984,6 @@ void AnnotatedCameraWidget::paintFrogPilotWidgets(const cereal::ModelDataV2::Rea
   }
 
   if (true) {
-    update_radar_tracks(&s, sm["liveTracks"].getLiveTracks(), model.getPosition());
     drawRadarTracks(painter, s.scene);
   }
 
