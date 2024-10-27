@@ -112,7 +112,7 @@ class Controls:
 
     # read params
     self.is_metric = self.params.get_bool("IsMetric")
-    self.is_ldw_enabled = self.params.get_bool("IsLdwEnabled")
+    self.is_ldw_enabled = True
 
     # detect sound card presence and ensure successful init
     sounds_available = HARDWARE.get_sound_card_online()

@@ -109,7 +109,7 @@ class CarInterface(CarInterfaceBase):
       *create_button_events(self.CS.lkas_enabled, self.CS.lkas_previously_enabled, {1: FrogPilotButtonType.lkas}),
     ]
 
-    ret.events = self.create_common_events(ret).to_msg()
+    ret.events = self.create_common_events(ret, c).to_msg()
 
     return ret, fp_ret
 

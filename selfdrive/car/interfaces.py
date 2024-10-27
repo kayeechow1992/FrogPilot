@@ -427,7 +427,7 @@ class CarInterfaceBase(ABC):
     return ret, fp_ret
 
 
-  def create_common_events(self, cs_out, extra_gears=None, pcm_enable=True, allow_enable=True,
+  def create_common_events(self, cs_out, CarControl, extra_gears=None, pcm_enable=True, allow_enable=True,
                            enable_buttons=(ButtonType.accelCruise, ButtonType.decelCruise)):
     events = Events()
 
@@ -475,7 +475,7 @@ class CarInterfaceBase(ABC):
         events.add(EventName.buttonCancel)
 
       # FrogPilot button presses
-      if b.type == FrogPilotButtonType.lkas and b.pressed:
+      if b.type == FrogPilotButtonType.lkas and b.pressed and not (CarControl.hudControl.leftLaneDepart or CarControl.hudControl.rightLaneDepart):
         self.always_on_lateral_disabled = not self.always_on_lateral_disabled
 
     # Handle permanent and temporary steering faults
