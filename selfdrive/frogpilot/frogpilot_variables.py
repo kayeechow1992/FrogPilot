@@ -29,8 +29,12 @@ TO_RADIANS = math.pi / 180                              # Conversion factor from
 
 
 def get_frogpilot_toggles(block=False):
-  toggles_dict = json.loads(Params().get("FrogPilotToggles", block=block))
-  return SimpleNamespace(**toggles_dict)
+  while block:
+    namespace = SimpleNamespace(**json.loads(Params().get("FrogPilotToggles", block=True)))
+    if namespace != SimpleNamespace():
+      return namespace
+    time.sleep(0.1)
+  return SimpleNamespace(**json.loads(Params().get("FrogPilotToggles")))
 
 
 def has_prime():
@@ -566,7 +570,7 @@ class FrogPilotVariables:
 
     toggle.lateral_tuning = self.params.get_bool("LateralTune")
     toggle.nnff = toggle.lateral_tuning and self.params.get_bool("NNFF")
-    toggle.smooth_curve_handling = toggle.lateral_tuning and self.params.get_bool("NNFFLite")
+    toggle.nnff_lite = toggle.lateral_tuning and self.params.get_bool("NNFFLite")
     toggle.taco_tune = toggle.lateral_tuning and self.params.get_bool("TacoTune")
     toggle.use_turn_desires = toggle.lateral_tuning and self.params.get_bool("TurnDesires")
 
@@ -629,10 +633,10 @@ class FrogPilotVariables:
     toggle.show_speed_limit_offset = toggle.navigation_ui and self.params.get_bool("ShowSLCOffset")
     toggle.speed_limit_vienna = toggle.navigation_ui and self.params.get_bool("UseVienna")
 
-    toggle.new_long_api_gm = openpilot_longitudinal and car_make == "gm" and self.params.get_bool("NewLongAPIGM")
-    toggle.new_long_api_hkg = openpilot_longitudinal and car_make == "hyundai" and self.params.get_bool("NewLongAPI")
-
     toggle.new_toyota_tune = openpilot_longitudinal and car_make == "toyota" and self.params.get_bool("NewToyotaTune")
+
+    toggle.old_long_api = openpilot_longitudinal and car_make == "gm" and not self.params.get_bool("NewLongAPIGM")
+    toggle.old_long_api |= openpilot_longitudinal and car_make == "hyundai" and not self.params.get_bool("NewLongAPI")
 
     toggle.personalize_openpilot = self.params.get_bool("PersonalizeOpenpilot")
     toggle.color_scheme = self.params.get("CustomColors", encoding='utf-8') if toggle.personalize_openpilot else "stock"
@@ -867,7 +871,7 @@ class FrogPilotVariables:
 
       toggle.lateral_tuning = self.default_frogpilot_toggles.LateralTune
       toggle.nnff = toggle.lateral_tuning and self.default_frogpilot_toggles.NNFF
-      toggle.smooth_curve_handling = toggle.lateral_tuning and self.default_frogpilot_toggles.NNFFLite
+      toggle.nnff_lite = toggle.lateral_tuning and self.default_frogpilot_toggles.NNFFLite
       toggle.taco_tune = toggle.lateral_tuning and self.default_frogpilot_toggles.TacoTune
       toggle.use_turn_desires = toggle.lateral_tuning and self.default_frogpilot_toggles.TurnDesires
 
@@ -903,8 +907,8 @@ class FrogPilotVariables:
       toggle.show_speed_limit_offset = toggle.navigation_ui and self.default_frogpilot_toggles.ShowSLCOffset
       toggle.speed_limit_vienna = toggle.navigation_ui and self.default_frogpilot_toggles.UseVienna
 
-      toggle.new_long_api_gm = openpilot_longitudinal and car_make == "gm" and self.default_frogpilot_toggles.NewLongAPIGM
-      toggle.new_long_api_hkg = openpilot_longitudinal and car_make == "hyundai" and self.default_frogpilot_toggles.NewLongAPI
+      toggle.old_long_api = openpilot_longitudinal and car_make == "gm" and not self.default_frogpilot_toggles.NewLongAPIGM
+      toggle.old_long_api |= openpilot_longitudinal and car_make == "hyundai" and not self.default_frogpilot_toggles.NewLongAPI
 
       toggle.new_toyota_tune = openpilot_longitudinal and car_make == "toyota" and self.default_frogpilot_toggles.NewToyotaTune
 
@@ -1079,7 +1083,7 @@ class FrogPilotVariables:
       toggle.minimum_lane_change_speed = self.default_frogpilot_toggles.MinimumLaneChangeSpeed * speed_conversion if toggle.lane_change_customizations else LANE_CHANGE_SPEED_MIN
 
       toggle.lateral_tuning = self.default_frogpilot_toggles.LateralTune
-      toggle.smooth_curve_handling = toggle.lateral_tuning and self.default_frogpilot_toggles.NNFFLite
+      toggle.nnff_lite = toggle.lateral_tuning and self.default_frogpilot_toggles.NNFFLite
       toggle.taco_tune = toggle.lateral_tuning and self.default_frogpilot_toggles.TacoTune
       toggle.use_turn_desires = toggle.lateral_tuning and self.default_frogpilot_toggles.TurnDesires
 
@@ -1109,8 +1113,8 @@ class FrogPilotVariables:
       toggle.show_speed_limit_offset = toggle.navigation_ui and self.default_frogpilot_toggles.ShowSLCOffset
       toggle.speed_limit_vienna = toggle.navigation_ui and self.default_frogpilot_toggles.UseVienna
 
-      toggle.new_long_api_gm = openpilot_longitudinal and car_make == "gm" and self.default_frogpilot_toggles.NewLongAPIGM
-      toggle.new_long_api_hkg = openpilot_longitudinal and car_make == "hyundai" and self.default_frogpilot_toggles.NewLongAPI
+      toggle.old_long_api = openpilot_longitudinal and car_make == "gm" and not self.default_frogpilot_toggles.NewLongAPIGM
+      toggle.old_long_api |= openpilot_longitudinal and car_make == "hyundai" and not self.default_frogpilot_toggles.NewLongAPI
 
       toggle.new_toyota_tune = openpilot_longitudinal and car_make == "toyota" and self.default_frogpilot_toggles.NewToyotaTune
 

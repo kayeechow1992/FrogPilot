@@ -22,6 +22,8 @@ from openpilot.selfdrive.controls.lib.drive_helpers import CRUISE_LONG_PRESS, V_
 from openpilot.selfdrive.controls.lib.events import Events
 from openpilot.selfdrive.controls.lib.vehicle_model import VehicleModel
 
+from openpilot.selfdrive.frogpilot.frogpilot_variables import get_frogpilot_toggles
+
 ButtonType = car.CarState.ButtonEvent.Type
 FrogPilotButtonType = custom.FrogPilotCarState.ButtonEvent.Type
 GearShifter = car.CarState.GearShifter
@@ -223,6 +225,8 @@ class CarInterfaceBase(ABC):
     self.CC: CarControllerBase = CarController(dbc_name, CP, self.VM)
 
     # FrogPilot variables
+    self.frogpilot_toggles = get_frogpilot_toggles(True)
+
     self.params = Params()
     self.params_memory = Params("/dev/shm/params")
 
@@ -231,9 +235,8 @@ class CarInterfaceBase(ABC):
     comma_nnff_supported = self.check_comma_nn_ff_support(CP.carFingerprint)
     nnff_supported = self.initialize_lat_torque_nn(CP.carFingerprint, eps_firmware)
 
-    lateral_tune = self.params.get_bool("LateralTune")
-    self.use_nnff = not comma_nnff_supported and nnff_supported and lateral_tune and self.params.get_bool("NNFF")
-    self.use_nnff_lite = not self.use_nnff and lateral_tune and self.params.get_bool("NNFFLite")
+    self.use_nnff = not comma_nnff_supported and nnff_supported and self.frogpilot_toggles.nnff
+    self.use_nnff_lite = not self.use_nnff and self.frogpilot_toggles.nnff_lite
 
     self.always_on_lateral_disabled = False
     self.belowSteerSpeed_shown = False

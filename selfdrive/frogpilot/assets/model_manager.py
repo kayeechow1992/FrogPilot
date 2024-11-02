@@ -73,8 +73,8 @@ class ModelManager:
       else:
         return {file['name'].replace('.thneed', ''): file['size'] for file in thneed_files if 'size' in file}
 
-    except requests.RequestException as e:
-      raise ConnectionError(f"Failed to fetch model sizes from {'GitHub' if 'github' in repo_url else 'GitLab'}: {e}")
+    except:
+      return {}
 
   @staticmethod
   def copy_default_model():
