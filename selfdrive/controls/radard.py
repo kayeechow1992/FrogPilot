@@ -213,7 +213,7 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
 def get_lead_adjacent(tracks: dict[int, Track], model_data: capnp._DynamicStructReader, lane_width: float, left: bool = True, far: bool = False) -> dict[str, Any]:
   lead_dict = {'status': False}
 
-  adjacent_tracks = [c for c in tracks.values() if c.vLead > 1 and c.potential_adjacent_lead(far, lane_width, left, model_data)]
+  adjacent_tracks = [c for c in tracks.values() if c.vLead != 0 and c.potential_adjacent_lead(far, lane_width, left, model_data)]
   if len(adjacent_tracks) > 0:
     closest_track = min(adjacent_tracks, key=lambda c: c.dRel)
     lead_dict = closest_track.get_RadarState()
